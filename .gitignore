@@ -199,3 +199,6 @@ fabric.properties
 *.key
 
 !/synth/__main__.py
+
+synth_accounts
+synth_logs
