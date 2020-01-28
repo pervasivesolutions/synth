@@ -113,15 +113,16 @@ If you want to change to `interactive` mode within your simulation, you can use 
 
 import logging, time
 import json
+import simplejson   # Better errors
 import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-import httplib, urllib
+import http, urllib
 import isodate
 import traceback
 import boto3 # AWS library for bulk upload
-from clients.client import Client
-from common import ISO8601, top, json_writer, evt2csv
+from .client import Client
+from common import ISO8601, top, json_writer, evt2csv, merge_test
 import gzip
 import shutil
 import os
@@ -158,15 +159,16 @@ def gzip_file(filepath):
         shutil.copyfileobj(f_in, f_out)
     return dest_filepath
 
-def upload_to_aws_bucket(dynamo_table, bucket_name, account_key, local_filepath):
-    logging.info("upload_to_aws_bucket(" + dynamo_table + "," + bucket_name + "," + account_key + "," + local_filepath + ")")
-    zipped = gzip_file(local_filepath)
-    filename = os.path.split(zipped)[1] # Just the filename
-    s3 = boto3.resource("s3")
-    (key,account_name) = account_key.split("/") # account_name acts as a double-check to make it really difficult to accidentally provide the wrong acc_ code
-    table_name = key[4:]    # without the acc_ underscore
-    logging.info("table_name = "+table_name)
 
+def check_account_name(dynamo_table, bucket_name, key, account_name):
+    # Checks that account name matches that provided in the key, to avoid accidentally uploading to wrong account
+    # (but don't bother doing this for Development)
+    if bucket_name == "ingest-development":
+        logging.info("Skipping account name check, as on development")
+        return True
+
+    s3 = boto3.resource("s3")
+    table_name = key[4:]    # without the acc_ underscore
     dynamo = boto3.resource("dynamodb")
     table = dynamo.Table(dynamo_table)
     response = table.get_item(Key = {"id" : table_name})
@@ -180,18 +182,34 @@ def upload_to_aws_bucket(dynamo_table, bucket_name, account_key, local_filepath)
         logging.error(str(response))
         raise
     if account_name == actual_an:
-        logging.info("Account name verified as '"+str(account_name)+"'")
+        # logging.info("Account name verified as '"+str(account_name)+"'")
+        return True
     else:
         logging.error("Bulk upload account name MISMATCH: supplied='"+str(account_name)+"' actual='"+str(actual_an)+"'")
         assert False
+    return False
 
-    k = "recordsByAccount/" + key + "/" + filename
-    # logging.info("Doing bucket.upload_file("+str(local_filepath)+","+str(k)+")")
-    bucket = s3.Bucket(bucket_name)
-    bucket.upload_file(zipped, k)
-    os.remove(zipped)
+last_upload_time = 0
+def upload_to_aws_bucket(dynamo_table, bucket_name, account_key, local_filepath):
+    global last_upload_time
+    delay = BULK_UPLOAD_DELAY_S - (time.time() - last_upload_time)
+    if delay > 0:   # Allow time for DP lambdas to pick-up point file, so we don't force a merge of an insane numbers of point files
+        logging.info("waiting "+str(int(delay))+"s between uploads")
+        time.sleep(delay)
+    logging.info("upload_to_aws_bucket(" + dynamo_table + "," + bucket_name + "," + account_key + "," + local_filepath + ")")
+    simplejson.loads(open(local_filepath,"rt").read())    # Check for errors
+    zipped = gzip_file(local_filepath)
+    filename = os.path.split(zipped)[1] # Just the filename
 
-    time.sleep(BULK_UPLOAD_DELAY_S) # Give time for DP lambdas to pick-up point file so don't force lambda to merge insane numbers of point files
+    (key,account_name) = account_key.split("/")
+    if(check_account_name(dynamo_table, bucket_name, key, account_name)):
+        s3 = boto3.resource("s3")
+        k = "recordsByAccount/" + key + "/" + filename
+        # logging.info("Doing bucket.upload_file("+str(local_filepath)+","+str(k)+")")
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_file(zipped, k)
+        os.remove(zipped)
+        last_upload_time = time.time()
 
 def set_headers(token):
     headers = {}
@@ -225,7 +243,7 @@ class Devicepilot(Client):
         self.min_post_period = isodate.parse_duration(params.get("devicepilot_min_post_period", "PT10S")).total_seconds()
         self.max_items_per_post = params.get("devicepilot_max_items_per_post", 500)
         self.last_post_time = time.time() - self.min_post_period    # Allow first post immediately
-        self.json_stream = json_writer.Stream(instance_name)
+        self.json_stream = json_writer.Stream(instance_name, merge=self.merge_posts)
         self.top = top.top()
 
         # queue_criterion/limit sets how often we flush messages to DevicePilot API
@@ -252,12 +270,11 @@ class Devicepilot(Client):
         if self.mode == "interactive":
             if self.merge_posts:
                 if len(self.post_queue)>0:
-                    if self.post_queue[-1]["$ts"] == props["$ts"]:
-                        if self.post_queue[-1]["$id"] == props["$id"]:
-                            if set(DO_NOT_MERGE_PROPERTIES.keys()) & set(props.keys()) == set([]):  # No non-mergable properties
-                                merged_posts = merged_posts + 1
-                                props.update(self.post_queue[-1])
-                                del(self.post_queue[-1])
+                    prev = self.post_queue[-1]
+                    if merge_test.ok(prev, props):
+                        merged_posts = merged_posts + 1
+                        props.update(self.post_queue[-1])
+                        del(self.post_queue[-1])
             self.post_queue.append(props)
             self.flush_post_queue_if_ready()
         if (self.mode == "bulk") and (record):
@@ -381,7 +398,7 @@ class Devicepilot(Client):
             resp = self.session.post(url, verify=True, headers=set_headers(self.key), data=body)
             if debug_post:
                 logging.info("devicePilot::post_device posted "+str(body))
-        except httplib.HTTPException as err:
+        except http.client.HTTPException as err:
             logging.error("ERROR: devicepilot.post_device() couldn't create on server")
             logging.error(str(err))
             logging.error(str(device))
@@ -393,7 +410,7 @@ class Devicepilot(Client):
         else:
             if resp.status_code not in [requests.codes.ok, requests.codes.created, requests.codes.accepted]:
                 logging.error("devicepilot.post_device() couldn't create on server")
-                # print  '%(status)03d (%(text)s)' % {"status": resp.status_code, "text": httplib.responses[resp.status_code]}
+                # print  '%(status)03d (%(text)s)' % {"status": resp.status_code, "text": http.client.responses[resp.status_code]}
                 logging.error("URL:"+str(url))
                 logging.error("Status code:"+str(resp.status_code))
                 logging.error("Text:"+str(resp.text))

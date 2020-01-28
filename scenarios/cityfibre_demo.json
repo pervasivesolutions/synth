@@ -1,0 +1,107 @@
+{
+    "restart_log" : true,
+    "engine" : {
+        "type" : "sim",
+        "start_time" : "now",
+        "end_time" : null
+    },
+    "events" : [
+        {
+            "at" : "PT0S",
+            "repeats" : 1,
+            "interval" : "PT0S",
+            "action" : {
+                "create_device" : {
+                    "functions" : {
+                        "basic" : {
+                            "label_root" : "Parking Sensor Demo "
+                        },
+                        "battery" : {
+                            "life_mu" : "PT10H",
+                            "life_sigma" : "PT0M",
+                            "autoreplace" : true
+                        },
+                        "heartbeat" : {
+                            "interval" : "PT24H"
+                        },
+                        "enumerated" : {
+                            "name" : "in_use",
+                            "values" : [true, false],
+                            "periods" : ["PT30M", "PT30M"],
+                            "sigmas" : ["PT5M", "PT5M"]
+                        },
+                        "variable" : [
+                            { "name" : "_type", "value" : "VisitorParkingSensor" },
+                            { "name" : "dev_eui", "value" : "0004a30b00aaaaaa" },
+                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
+                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "model_number", "value" : "demo_parking_sensor" },
+                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "at" : "PT0S",
+            "repeats": 1,
+            "interval" : "PT0S",
+            "action": {
+                "create_device" : {
+                    "functions" : {
+                        "basic" : {
+                            "label_root" : "Environment Sensor"
+                        },
+                        "battery" : {
+                            "life_mu" : "PT10H",
+                            "life_sigma" : "PT0M",
+                            "autoreplace" : true
+                        },
+                        "heartbeat" : {
+                            "interval" : "PT24H"
+                        },
+                        "variable" : [
+                            { "name" : "_type", "value" : "EnvironmentPolySensor" },
+                            { "name" : "dev_eui", "value" : "0004a30b00bbbbbb" },
+                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
+                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "model_number", "value" : "demo_environment_sensor" },
+                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
+                            {
+                                "name"  : "temp",
+                                "timefunction": {
+                                    "sinewave" : {
+                                        "period" : ["PT20H", "PT24H", "PT30H"],
+                                        "amplitude" : [5, 15, 7],
+                                        "overall_amplitude" : 15,
+                                        "sample_period" : "PT1H"
+                                    }
+                                }
+                            },
+                            {
+                                "name" : "humidity",
+                                "timefunction": {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : 30,
+                                        "upper" : 50
+                                    }
+                                }
+                            }, 
+                            {
+                                "name" : "co",
+                                "timefunction" : {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : 0,
+                                        "upper" : 5
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -17,8 +17,8 @@ Device properties created::
 
 """
 
-from device import Device
-from helpers import dark_sky
+from .device import Device
+from .helpers import dark_sky
 import logging
 
 MEASUREMENT_INTERVAL_S = 60*60

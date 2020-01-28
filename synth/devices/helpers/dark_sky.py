@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#T!/usr/bin/env python
 #
 # Looks up historical weather data in Dark Sky
 #
@@ -22,7 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json, httplib, urllib
+import json, http, urllib
+import time
 import logging
 
 CACHE_FILE = "../synth_logs/dark_sky_cache.txt"
@@ -36,18 +37,13 @@ if __name__ == "__main__":
     CACHE_FILE = "../../../" + CACHE_FILE
     KEY_FILE = "../../../" + KEY_FILE
 
-def set_headers():
-    """Sets the headers for sending to the server.
-
-       We assume that the user has a token that allows them to login. """
-    headers = {}
-    headers["Content-Type"] = "application/json"
-    return headers
-
-
 # ==== Dark Sky API ====
 
-caches = {"weather" : {}}
+def clear_caches():
+    global caches
+    caches = {"weather" : {}}
+
+clear_caches()
 try:
     logging.info("Powered by Dark Sky (tm)")    # Requirement of service to display this
     f = open(CACHE_FILE)
@@ -66,11 +62,26 @@ try:
 except:
     logging.error("Can't open Dark Sky key file")
 
+def set_headers():
+    """Sets the headers for sending to the server.
+
+       We assume that the user has a token that allows them to login. """
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    return headers
+
+
 def add_to_cache(cache, key, contents):
     caches[cache][key] = contents
-    f = open(CACHE_FILE, "wt")
-    f.write(json.dumps(caches))
-    f.close()
+
+def write_cache():
+    if CACHE_FILE:
+        s = json.dumps(caches)
+        if len(s) > 1e7:
+            logging.warning("Dark Sky cache file size is getting large: "+str(len(s))+" bytes")
+        open(CACHE_FILE, "wt").write(s)
+    else:
+        logging.info("Not writing Dark Sky back to cache")
 
 def round_time(epoch_seconds):
     # Round time to hourly resolution (so if multiple sim runs are done in quick succession, and with timing relative to real time, we don't do lots of lookups for times just a few minutes apart)
@@ -112,30 +123,48 @@ def get_weather(latitude, longitude, epoch_seconds):
 
     logging.info("Looking up " + cache_key + " in Dark Sky")
 
-    conn = httplib.HTTPSConnection(API_DOMAIN)
+    time_start = time.time()
+
+    conn = http.client.HTTPSConnection(API_DOMAIN)
     URL = "/forecast/"+str(account_key)+"/"+str(latitude)+","+str(longitude)+","+str(epoch_seconds)+"?units=si&exclude=minutely,daily,flags"    # Using exclude apparently makes it a bit faster?
     conn.request('GET', URL, None, set_headers())
     resp = conn.getresponse()
-    result = resp.read()
+    result = resp.read().decode('utf-8')    # We need a string not bytes[]
+
+    time_result = time.time()
+
     try:
         data = json.loads(result)
         result = extract_and_cache(data["currently"], latitude, longitude, epoch_seconds)   # Requested reading
         for r in data["hourly"]["data"]:
             extract_and_cache(r, latitude, longitude)   # Also cache info for other hours that DS has given us
+        write_cache()
     except:
         logging.error(URL)
         logging.error(str(result))
         logging.error(json.dumps(data))
         raise
+
+    time_end = time.time()
+
+    t_fetch = time_result - time_start
+    t_process = time_end - time_result
+    if t_fetch > 1 or t_process > 1:
+        logging.warning("(Dark Sky took "+str(t_fetch)+"s to fetch and "+str(t_process)+"s to process)")
+
     return result
 
 def main():
+    global CACHE_FILE, caches
+    logging.basicConfig(level = logging.NOTSET)
+    logging.info("Starting")
     t = 1552898857  # 08:47 on 18/03/2019
     (lat, lon) = (52.2053, 0.1218)  # Cambridge UK
-    caches["weather"] = {}  # Stop caching during testing
+    CACHE_FILE = None   # Don't read or write cache file during testing (but still cache during testing)
+    clear_caches()
     for h in range(48):
         result = get_weather(lat, lon, t + h * HOUR)
-        print "get_weather returned ", result
+        print(result)
  
 if __name__ == "__main__":
     main()

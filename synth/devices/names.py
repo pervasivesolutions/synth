@@ -17,8 +17,8 @@ Device properties created::
     
 """
 
-from device import Device
-from helpers import people_names
+from .device import Device
+from .helpers import people_names
 
 class Names(Device):
     def __init__(self, instance_name, time, engine, update_callback, context, params):

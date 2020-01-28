@@ -50,7 +50,6 @@ htmlcov/
 .tox/
 .coverage
 .coverage.*
-.cache
 nosetests.xml
 coverage.xml
 *,cover
@@ -200,3 +199,6 @@ fabric.properties
 *.key
 
 !/synth/__main__.py
+
+synth_accounts
+synth_logs

@@ -1,12 +1,28 @@
 # Runs a new synth instance, with logging, having first killed any already-running instance
 # NOTE: The pkill should really check only against the first argument (which by convention is the instance name) - so that if you run another scenario on the same instance, the previous instance is killed first
-command="python synth $@"
+set -e
+if [ $# -ne 2 ]; then
+    echo "Usage: runSynth account scenario"
+    exit -1
+fi
+./checkMem
+command="python3 synth $@"
 echo $command
-pkill -f "$command"
-echo -n `date` " " >> ../synth_logs/jobs_run.txt
-echo $command >> ../synth_logs/jobs_run.txt
-nohup $command >/dev/null 2>&1 &
-echo "tail -f " ../synth_logs/$1.out
-echo "(^C to stop monitoring - process will continue)"
-sleep 3
-tail -c+0 -f ../synth_logs/$1.out
+pkill -f "$command" || echo ""
+rm -f ../synth_logs/$1.out
+rm -f ../synth_logs/$1.evt
+rm -f ../synth_logs/$1.csv
+rm -f ../synth_logs/$1\0*.json
+rm -f ../synth_logs/$1.nohup
+nohup $command > ../synth_logs/$1.nohup 2>&1 & 
+sleep 1
+if [ -f ../synth_logs/$1.out ]; then
+    echo -n `whoami` `date` "STARTED " >> ../synth_logs/jobs_run.txt
+    echo $command >> ../synth_logs/jobs_run.txt
+    echo "(^C stops monitoring - process will continue)"
+    sleep 2
+    tail -c+0 -f ../synth_logs/$1.out
+else 
+    echo "ERROR RUNNING SYNTH IN BACKGROUND. If below doesn't explain it, then manually re-run" $command
+    cat ../synth_logs/$1.nohup
+fi

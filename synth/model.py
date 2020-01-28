@@ -75,7 +75,7 @@ MODEL_FIELDS_BECOME_PROPERTIES = True
 
 def randomise(s):
 # If string s contains a "randomise me" list of choices, then turn it into one of its choices
-    if not isinstance(s, basestring):
+    if not isinstance(s, str):
         return s
     if s.startswith("[") and s.endswith("]"):
         return randstruct.evaluate(s)
@@ -152,6 +152,7 @@ class Model():
         self.update_callback = update_callback
         self.context = context
         self.devices = []
+        self.cache_gpab = {}    # If we anticipate changing the model after loading, we should invalidate this cache then
 
         self.load_file(specification)
         self.enact_models(self.models)
@@ -164,6 +165,7 @@ class Model():
                 self.hierarchy = elem["hierarchy"].split("/")
             elif "model" in elem:
                 for e in enumerate_model_counters(elem):
+                    # logging.info("model element is "+str(e))
                     self.render_smart_properties(e)
                     self.models.append(e)
             else:
@@ -195,7 +197,8 @@ class Model():
     def render_smart_properties(self, elem):
         new_props = {}
         if "properties" in elem:
-            for n,v in elem["properties"].copy().iteritems():
+            for n,v in elem["properties"].copy().items():
+                # logging.info("Rendering model smart properties "+str((n,v)))
                 if type(v) == dict:
                     model = importer.get_class('model', n)
                     model(self.context, v, new_props)
@@ -237,6 +240,8 @@ class Model():
         # Finds other devices whose model hiearchy matches this device's, insofar as the others define the hierarchy
         # In other words, if other devices only specify one of the hierarchy levels, but in that they match this device, then return the device
         # So for example if a weather device defines "site=X" and you call this function from a device which also defines "site=X" (whatever other model hierarchy levels it defines), it will match
+        if device in self.cache_gpab:
+            return self.cache_gpab[device]
         desired = device.model_spec
         devs = []
         for d in self.devices:
@@ -249,6 +254,7 @@ class Model():
                                 match = False
                 if match:
                     devs.append(d)
+        self.cache_gpab[device] = devs
         return devs
 
 
@@ -277,5 +283,5 @@ if __name__ == "__main__":
     test( 2, { "model" : { "a" : "A #2#", "b" : "B #1#" } } )
     test( 4, { "model" : { "a" : "A #2#", "b" : "B #2#" } } )
     test( 27, { "model" : { "a" : "A #3#", "b" : "B #3#", "c" : "C #3#" } } )
-    print "Tests passed"
+    print("Tests passed")
 

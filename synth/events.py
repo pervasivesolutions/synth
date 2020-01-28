@@ -68,6 +68,10 @@ Get Synth to run a query on the historical data it has just generated [TODO: cod
         "expression" : "$ts < ago(30)"
     }
 
+Install an anomaly-analyser::
+
+    "install_analyser" {
+    }
 """
 #
 # Copyright (c) 2017 DevicePilot Ltd.
@@ -101,6 +105,7 @@ from common import query
 from common import evt2csv
 from common import ISO8601
 from common import conftime
+from analysis import analyse
 
 LOG_DIRECTORY = "../synth_logs/"
 
@@ -119,6 +124,8 @@ class Events():
     def __init__(self, client, engine, instance_name, context, eventList):
         """<params> is a list of events. Note that our .event_count property is read from outside."""
         def update_callback(device_id, time, properties):
+            for c in self.update_callbacks:
+                properties.update(c(properties))  # We MERGE the results of the callback with the original message
             write_event_log(properties)
             client.update_device(device_id, time, properties)
 
@@ -170,21 +177,21 @@ class Events():
                 s += ","
             s += "\n"
             self.logfile.write(s)
-            self.logtext.append(s)
+            # self.logtext.append(s)
 
             self.event_count += 1
-
 
         restart_log = context.get("restart_log",True)
         
         self.client = client
         self.event_count = 0
+        self.update_callbacks = []
 
         mkdir_p(LOG_DIRECTORY)
         self.file_mode = "at"
         if restart_log:
             self.file_mode = "wt"
-        self.logfile = open(LOG_DIRECTORY+instance_name+".evt", self.file_mode, 0)    # Unbuffered
+        self.logfile = open(LOG_DIRECTORY+instance_name+".evt", self.file_mode)    # This was unbuffered, but Python3 now doesn't allow text files to be unbuffered
         self.logfile.write("*** New simulation starting at real time "+datetime.now().ctime()+" (local)\n")
 
         self.logtext = []   # TODO: Probably a Bad Idea to store this in memory. Instead when we want this we should probably close the logfile, read it and then re-open it. We store as an array because appending to a large string gets very slow
@@ -228,6 +235,10 @@ class Events():
                                              change_property_action,
                                              action["change_property"],
                                              None)
+                elif "install_analyser" in action:
+                    logging.info("Installing analyser")
+                    self.analyser = analyse.Analyser()
+                    self.update_callbacks.append(self.analyser.process)
                 else:   # Plug-in actions
                     name = action.keys()[0]
                     if not name.startswith("client."):

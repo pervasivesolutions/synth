@@ -23,8 +23,8 @@ import random
 import logging
 import time
 
-from device import Device
-import helpers.opening_times as opening_times
+from .device import Device
+from .helpers import opening_times as opening_times
 
 ENERGY_READING_INTERVAL_S = 60 * 30
 DEFAULT_OPENING_TIMES = "nine_to_five"

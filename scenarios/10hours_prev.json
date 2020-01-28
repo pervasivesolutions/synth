@@ -7,7 +7,7 @@
     },
     "events" : [
         { 
-            "comment" : "A device with periodic comms outages"
+            "comment" : "A device with periodic comms outages",
             "at" : "PT0S",
             "repeats" : 10,
             "interval" : "PT1S",
@@ -32,3 +32,4 @@
         }
     ]
 }
+    

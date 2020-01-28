@@ -28,7 +28,7 @@ Generate and exercise synthetic devices for testing and demoing IoT services.
 import logging
 import os
 import time, sys, json, re, traceback
-import requests, httplib
+import requests
 import random   # Might want to replace this with something we control
 from datetime import datetime
 from common import ISO8601
@@ -84,7 +84,7 @@ def post_to_slack(text):
                    }
         try:
             response = requests.post(g_slack_webhook, data=json.dumps(payload), headers={'Content-Type': 'application/json'})
-        except httplib.HTTPException as err:
+        except Exception as err:
             logging.error("post_to_slack() failed: "+str(err))
 
 def merge(a, b, path=None): # From https://stackoverflow.com/questions/7204805/dictionaries-of-dictionaries-merge/7205107#7205107
@@ -215,6 +215,8 @@ def main():
         return events.event_count
 
     logging.getLogger().setLevel(logging.INFO)
+    os.makedirs("../synth_logs", exist_ok = True)
+    os.makedirs("../synth_accounts", exist_ok = True)
     params = get_params()
     assert g_instance_name is not None, "Instance name has not been defined, but this is required for logfile naming"
     init_logging(params)
@@ -269,10 +271,13 @@ def main():
     exit(-1)
 
 if __name__ == "__main__":
+    print("Running on Python"+str(sys.version_info.major)+"."+str(sys.version_info.minor))
+    assert sys.version_info.major >= 3, "Synth must be run with python3 or higher"
+
     if False:    # Profile
         import cProfile, pstats
         cProfile.run('main()', 'profiling')
         p = pstats.Stats('profiling')
-        p.sort_stats('time').print_stats(20)
+        p.sort_stats('cumulative').print_stats(30)
     else:
         main()
