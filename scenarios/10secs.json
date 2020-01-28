@@ -3,31 +3,96 @@
     "engine" : {
         "type" : "sim",
         "start_time" : "now",
-        "end_time" : "PT10S"
+        "end_time" : null
     },
     "events" : [
         {
             "at" : "PT0S",
-            "repeats" : 10,
-            "interval" : "PT1S",
+            "repeats" : 1,
+            "interval" : "PT0S",
+            "action" : {
+                "create_device" : {
+                    "functions" : {
+                        "basic" : {
+                            "label_root" : "Parking Sensor Demo"
+                        },
+                        "battery" : {
+                            "life_mu" : "PT10H",
+                            "life_sigma" : "PT0M",
+                            "autoreplace" : true
+                        },
+                        "latlong" : {
+                            "area_centre" : "London, UK",
+                            "area_radius" : "Cambridge, UK"
+                        },
+                        "heartbeat" : {
+                            "interval" : "PT24H"
+                        },
+                        "enumerated" : {
+                            "name" : "in_use",
+                            "values" : ["occupied", "unnocupied"],
+                            "periods" : ["PT30M", "PT30M"],
+                            "sigmas" : ["PT5M", "PT5M"]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "at" : "PT0S",
+            "repeats": 1,
+            "interval" : "PT0S",
             "action": {
                 "create_device" : {
                     "functions" : {
-                        "battery" : {
-                            "life_mu" : "PT1M",
-                            "life_sigma" : "PT0M",
-                            "autoreplace" : false
+                        "basic" : {
+                            "label_root" : "Environment Sensor"
                         },
-                        "names" : {},
-                        "firmware" : {},
+                        "battery" : {
+                            "life_mu" : "PT10H",
+                            "life_sigma" : "PT0M",
+                            "autoreplace" : true
+                        },
                         "latlong" : {
                             "area_centre" : "London, UK",
-                            "area_radius" : "Berlin, Germany"
+                            "area_radius" : "Cambridge, UK"
                         },
-                        "comms" : {
-                            "reliability" : 0.1,
-                            "period" : "PT1H"
-                        }
+                        "heartbeat" : {
+                            "interval" : "PT24H"
+                        },
+                        "variable" : [
+                            {
+                                "name"  : "temp",
+                                "timefunction": {
+                                    "sinewave" : {
+                                        "period" : ["PT20H", "PT24H", "PT30H"],
+                                        "amplitude" : [5, 15, 7],
+                                        "overall_amplitude" : 15,
+                                        "sample_period" : "PT1H"
+                                    }
+                                }
+                            },
+                            {
+                                "name" : "humidity",
+                                "timefunction": {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : 30,
+                                        "upper" : 50
+                                    }
+                                }
+                            }, 
+                            {
+                                "name" : "co",
+                                "timefunction" : {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : 0,
+                                        "upper" : 5
+                                    }
+                                }
+                            }
+                        ]
                     }
                 }
             }

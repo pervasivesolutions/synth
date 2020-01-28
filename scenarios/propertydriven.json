@@ -2,13 +2,13 @@
     "restart_log" : true,
     "engine" : {
         "type" : "sim",
-        "start_time" : "-P7D",
-        "end_time" : "now"
+        "start_time" : "now",
+        "end_time" : null
     },
     "events" : [
         {
             "at" : "PT0S",	// Each device emits a value with a statically-random offset mixed with a random wave
-            "repeats" : 10,
+            "repeats" : 1,
             "interval" : "PT0S",
             "action": {
                 "create_device" : {
@@ -25,7 +25,7 @@
                                         },
                                         {
                                         	"randomwave" : {
-                                        		"period" : "PT1H"
+                                        		"period" : "PT10S"
                                         	}
                                         }
                                     ]
