@@ -21,10 +21,6 @@
                             "life_sigma" : "PT0M",
                             "autoreplace" : true
                         },
-                        "latlong" : {
-                            "area_centre" : "London, UK",
-                            "area_radius" : "Cambridge, UK"
-                        },
                         "heartbeat" : {
                             "interval" : "PT24H"
                         },
@@ -52,10 +48,6 @@
                             "life_mu" : "PT10H",
                             "life_sigma" : "PT0M",
                             "autoreplace" : true
-                        },
-                        "latlong" : {
-                            "area_centre" : "London, UK",
-                            "area_radius" : "Cambridge, UK"
                         },
                         "heartbeat" : {
                             "interval" : "PT24H"
