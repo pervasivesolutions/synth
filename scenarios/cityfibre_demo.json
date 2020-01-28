@@ -14,7 +14,7 @@
                 "create_device" : {
                     "functions" : {
                         "basic" : {
-                            "label_root" : "Parking Sensor Demo"
+                            "label_root" : "Parking Sensor Demo "
                         },
                         "battery" : {
                             "life_mu" : "PT10H",
@@ -26,10 +26,18 @@
                         },
                         "enumerated" : {
                             "name" : "in_use",
-                            "values" : ["occupied", "unnocupied"],
+                            "values" : [true, false],
                             "periods" : ["PT30M", "PT30M"],
                             "sigmas" : ["PT5M", "PT5M"]
-                        }
+                        },
+                        "variable" : [
+                            { "name" : "_type", "value" : "VisitorParkingSensor" },
+                            { "name" : "dev_eui", "value" : "0004a30b00aaaaaa" },
+                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
+                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "model_number", "value" : "demo_parking_sensor" },
+                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" }
+                        ]
                     }
                 }
             }
@@ -53,6 +61,12 @@
                             "interval" : "PT24H"
                         },
                         "variable" : [
+                            { "name" : "_type", "value" : "EnvironmentPolySensor" },
+                            { "name" : "dev_eui", "value" : "0004a30b00bbbbbb" },
+                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
+                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "model_number", "value" : "demo_environment_sensor" },
+                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
                             {
                                 "name"  : "temp",
                                 "timefunction": {
