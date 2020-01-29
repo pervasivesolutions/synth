@@ -2,6 +2,11 @@
 
 ssh pervasive@63.32.112.69 < scripts/run_on_server_deploy.sh
 
+# visudo
+
+# Cmnd_Alias SYNTH_SERVICES = /usr/bin/systemctl status cityfibre_synth,/usr/bin/systemctl start cityfibre_synth,/usr/bin/systemctl stop cityfibre_synth,/usr/bin/systemctl restart cityfibre_synth
+# pervasive ALL = NOPASSWD: SYNTH_SERVICES
+
 # pervasive ALL= NOPASSWD: /usr/bin/systemctl status cityfibre_synth
 # pervasive ALL= NOPASSWD: /usr/bin/systemctl restart cityfibre_synth
 # pervasive ALL= NOPASSWD: /usr/bin/systemctl start cityfibre_synth
