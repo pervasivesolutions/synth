@@ -1,12 +1,12 @@
 [Unit]
-Description=CityFibre Synth
+Description=Comms365 Synth
 After=network.target
 
 [Service]
 Type=simple
 Environment=STAGE=production
 WorkingDirectory=/var/www/synth/current
-ExecStart=/usr/bin/python3 synth OnCityFibreDevicePilot demo_dashboard_sensors
+ExecStart=/usr/bin/python3 synth OnCommsDevicePilot demo_dashboard_sensors
 Restart=on-failure
 User=pervasive
 StandardOutput=syslog
