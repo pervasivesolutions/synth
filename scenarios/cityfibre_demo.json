@@ -32,7 +32,20 @@
                         },
                         "variable" : [
                             { "name" : "_type", "value" : "VisitorParkingSensor" },
-                            { "name" : "dev_eui", "value" : "0004a30b00aaaaaa" },
+                            { 
+                                "name" : "dev_eui", 
+                                "value" : [
+                                    "0004a30b00aaaaa1", 
+                                    "0004a30b00aaaaa2", 
+                                    "0004a30b00aaaaa3", 
+                                    "0004a30b00aaaaa4", 
+                                    "0004a30b00aaaaa5", 
+                                    "0004a30b00aaaaa6", 
+                                    "0004a30b00aaaaa7", 
+                                    "0004a30b00aaaaa8", 
+                                    "0004a30b00aaaaa9",
+                                    "0004a30b00aaaaaa"
+                                ] },
                             { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
                             { "name" : "location", "value" : "Place name here" },
                             { "name" : "model_number", "value" : "demo_parking_sensor" },
@@ -62,19 +75,31 @@
                         },
                         "variable" : [
                             { "name" : "_type", "value" : "EnvironmentPolySensor" },
-                            { "name" : "dev_eui", "value" : "0004a30b00bbbbbb" },
+                            { 
+                                "name" : "dev_eui", 
+                                "value" : 
+                                [
+                                    "0004a30b00aaaab1", 
+                                    "0004a30b00aaaab2", 
+                                    "0004a30b00aaaab3", 
+                                    "0004a30b00aaaab4", 
+                                    "0004a30b00aaaab5" 
+                                ] 
+                            },
                             { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
                             { "name" : "location", "value" : "Place name here" },
                             { "name" : "model_number", "value" : "demo_environment_sensor" },
                             { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
                             {
                                 "name"  : "temp",
-                                "timefunction": {
+                                "timefunction" : {
                                     "sinewave" : {
-                                        "period" : ["PT20H", "PT24H", "PT30H"],
-                                        "amplitude" : [5, 15, 7],
-                                        "overall_amplitude" : 15,
-                                        "sample_period" : "PT1H"
+                                        "period" : ["PT7M", "PT13M", "PT17M", "PT23M", "PT37M", "PT3H", "PT13H", "PT27H", "P3D", "P7D", "P13D"],
+                                        "overall_amplitude" : 15.0,
+                                        "overall_offset" : -3.5,
+                                        "sample_period" : "PT3H",
+                                        "randomise_phase_by" : "$id",
+                                        "precision" : 10
                                     }
                                 }
                             },
