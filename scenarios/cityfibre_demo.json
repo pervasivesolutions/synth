@@ -8,7 +8,7 @@
     "events" : [
         {
             "at" : "PT0S",
-            "repeats" : 1,
+            "repeats" : 10,
             "interval" : "PT0S",
             "action" : {
                 "create_device" : {
@@ -44,7 +44,7 @@
         },
         {
             "at" : "PT0S",
-            "repeats": 1,
+            "repeats": 5,
             "interval" : "PT0S",
             "action": {
                 "create_device" : {
