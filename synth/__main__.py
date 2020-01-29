@@ -64,13 +64,13 @@ def init_logging(params):
     logging.Formatter.converter = in_simulated_time # Make logger use simulated time
 
     # Log to file
-    try:
-        os.mkdir(LOG_DIR)	# Ensure directory exists, first time through
-    except:
-        pass
-    file_handler = logging.FileHandler(filename=LOG_DIR + g_instance_name + ".out", mode="w")
-    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-    h2 = logging.getLogger().addHandler(file_handler)
+    # try:
+    #     os.mkdir(LOG_DIR)	# Ensure directory exists, first time through
+    # except:
+    #     pass
+    # file_handler = logging.FileHandler(filename=LOG_DIR + g_instance_name + ".out", mode="w")
+    # file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    # h2 = logging.getLogger().addHandler(file_handler)
 
     # Log to Slack
     g_slack_webhook = params.get("slack_webhook", None)
