@@ -30,8 +30,27 @@
                             "periods" : ["PT30M", "PT30M"],
                             "sigmas" : ["PT5M", "PT5M"]
                         },
+                        "latlong" : {
+                            "area_centre" : "London, UK",
+                            "area_radius" : "Berlin, Germany"
+                        },
                         "variable" : [
                             { "name" : "_type", "value" : "VisitorParkingSensor" },
+                            {
+                                "name" : "name",
+                                "series" : [
+                                    "Demo Parking Sensor 1",
+                                    "Demo Parking Sensor 2",
+                                    "Demo Parking Sensor 3",
+                                    "Demo Parking Sensor 4",
+                                    "Demo Parking Sensor 5",
+                                    "Demo Parking Sensor 6",
+                                    "Demo Parking Sensor 7",
+                                    "Demo Parking Sensor 8",
+                                    "Demo Parking Sensor 9",
+                                    "Demo Parking Sensor 10"
+                                ]
+                            },
                             { 
                                 "name" : "dev_eui", 
                                 "series" : [
@@ -73,8 +92,22 @@
                         "heartbeat" : {
                             "interval" : "PT24H"
                         },
+                        "latlong" : {
+                            "area_centre" : "London, UK",
+                            "area_radius" : "Berlin, Germany"
+                        },
                         "variable" : [
                             { "name" : "_type", "value" : "EnvironmentPolySensor" },
+                            {
+                                "name" : "name",
+                                "series" : [
+                                    "Demo Environment Sensor 1",
+                                    "Demo Environment Sensor 2",
+                                    "Demo Environment Sensor 3",
+                                    "Demo Environment Sensor 4",
+                                    "Demo Environment Sensor 5"
+                                ]
+                            },
                             { 
                                 "name" : "dev_eui", 
                                 "series" : 
@@ -98,7 +131,7 @@
                                         "overall_amplitude" : 15.0,
                                         "overall_offset" : -3.5,
                                         "sample_period" : "PT1H",
-                                        "randomise_phase_by" : "$id",
+                                        "randomise_phase_by" : "$id",   
                                         "precision" : 10
                                     }
                                 }
