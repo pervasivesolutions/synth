@@ -34,7 +34,7 @@
                             { "name" : "_type", "value" : "VisitorParkingSensor" },
                             { 
                                 "name" : "dev_eui", 
-                                "value" : [
+                                "series" : [
                                     "0004a30b00aaaaa1", 
                                     "0004a30b00aaaaa2", 
                                     "0004a30b00aaaaa3", 
@@ -77,7 +77,7 @@
                             { "name" : "_type", "value" : "EnvironmentPolySensor" },
                             { 
                                 "name" : "dev_eui", 
-                                "value" : 
+                                "series" : 
                                 [
                                     "0004a30b00aaaab1", 
                                     "0004a30b00aaaab2", 
