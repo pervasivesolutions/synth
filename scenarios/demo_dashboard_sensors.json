@@ -1,3 +1,82 @@
+#define GLOBAL_SENSOR_FUNCTIONS
+"battery" : {
+    "life_mu" : "PT10H",
+    "life_sigma" : "PT0M",
+    "autoreplace" : true
+},
+"heartbeat" : {
+    "interval" : "PT24H"
+},
+"latlong" : {
+    "area_centre" : "London, UK",
+    "area_radius" : "Berlin, Germany"
+}
+#enddef
+#define GLOBAL_SENSOR_VARIABLES
+{ "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
+{ "name" : "_status", "value" : "active" },
+{
+    "name" : "rssi",
+    "timefunction" : {
+        "randomwave" : {
+            "period" : "PT1H",
+            "lower" : -110,
+            "upper" : -60
+        }
+    }
+}
+#enddef
+#define PARKING_SENSOR_FUNCTIONS
+"enumerated" : {
+    "name" : "in_use",
+    "values" : [true, false],
+    "periods" : ["PT30M", "PT30M"],
+    "sigmas" : ["PT5M", "PT5M"]
+}
+#enddef
+#define PARKING_SENSOR_VARIABLES
+{ "name" : "_type", "value" : "VisitorParkingSensor" },
+{ "name" : "model_number", "value" : "demo_parking_sensor" }
+#enddef
+
+#define ENVIRONMENT_SENSOR_VARIABLES
+{ "name" : "_type", "value" : "EnvironmentPolySensor" },
+{ "name" : "model_number", "value" : "demo_environment_sensor" },
+{
+    "name"  : "temp",
+    "timefunction" : {
+        "sinewave" : {
+            "period" : ["PT7M", "PT13M", "PT17M", "PT23M", "PT37M", "PT3H", "PT13H", "PT27H", "P3D", "P7D", "P13D"],
+            "overall_amplitude" : 15.0,
+            "overall_offset" : -3.5,
+            "sample_period" : "PT1H",
+            "randomise_phase_by" : "$id",   
+            "precision" : 10
+        }
+    }
+},
+{
+    "name" : "humidity",
+    "timefunction": {
+        "randomwave" : {
+            "period" : "PT1H",
+            "lower" : 30,
+            "upper" : 50
+        }
+    }
+}, 
+{
+    "name" : "co",
+    "timefunction" : {
+        "randomwave" : {
+            "period" : "PT1H",
+            "lower" : 0,
+            "upper" : 5
+        }
+    }
+}
+#enddef
+
 {
     "restart_log" : true,
     "engine" : {
@@ -16,26 +95,12 @@
                         "basic" : {
                             "label_root" : "Parking Sensor Demo "
                         },
-                        "battery" : {
-                            "life_mu" : "PT10H",
-                            "life_sigma" : "PT0M",
-                            "autoreplace" : true
-                        },
-                        "heartbeat" : {
-                            "interval" : "PT24H"
-                        },
-                        "enumerated" : {
-                            "name" : "in_use",
-                            "values" : [true, false],
-                            "periods" : ["PT30M", "PT30M"],
-                            "sigmas" : ["PT5M", "PT5M"]
-                        },
-                        "latlong" : {
-                            "area_centre" : "London, UK",
-                            "area_radius" : "Berlin, Germany"
-                        },
+                        GLOBAL_SENSOR_FUNCTIONS,
+                        PARKING_SENSOR_FUNCTIONS,
                         "variable" : [
-                            { "name" : "_type", "value" : "VisitorParkingSensor" },
+                            GLOBAL_SENSOR_VARIABLES,
+                            PARKING_SENSOR_VARIABLES,
+                            { "name" : "customer_id", "value" : "5b880cf52645087f044cbe21" },
                             {
                                 "name" : "name",
                                 "series" : [
@@ -65,7 +130,7 @@
                                     "0004a30b00aaaaa9",
                                     "0004a30b00aaaaaa"
                                 ] },
-                            { "name" : "customer_id", "value" : "5b880cf52645087f044cbe21" },
+                            
                             { "name" : "location", "series" : [
                                 "Bay 1",
                                 "Bay 2",
@@ -77,20 +142,7 @@
                                 "Bay 8",
                                 "Bay 9",
                                 "Bay 10"
-                            ] },
-                            { "name" : "model_number", "value" : "demo_parking_sensor" },
-                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
-                            { "name" : "_status", "value" : "active" },
-                            {
-                                "name" : "rssi",
-                                "timefunction" : {
-                                    "randomwave" : {
-                                        "period" : "PT1H",
-                                        "lower" : -110,
-                                        "upper" : -60
-                                    }
-                                }
-                            }
+                            ] }
                         ]
                     }
                 }
@@ -106,20 +158,11 @@
                         "basic" : {
                             "label_root" : "Demo Environment Sensor"
                         },
-                        "battery" : {
-                            "life_mu" : "PT10H",
-                            "life_sigma" : "PT0M",
-                            "autoreplace" : true
-                        },
-                        "heartbeat" : {
-                            "interval" : "PT24H"
-                        },
-                        "latlong" : {
-                            "area_centre" : "London, UK",
-                            "area_radius" : "Berlin, Germany"
-                        },
+                        GLOBAL_SENSOR_FUNCTIONS,
                         "variable" : [
-                            { "name" : "_type", "value" : "EnvironmentPolySensor" },
+                            GLOBAL_SENSOR_VARIABLES,
+                            ENVIRONMENT_SENSOR_VARIABLES,
+                            { "name" : "customer_id", "value" : "0" },
                             {
                                 "name" : "name",
                                 "series" : [
@@ -141,64 +184,66 @@
                                     "0004a30b00aaaab5" 
                                 ] 
                             },
-                            { "name" : "customer_id", "value" : "0" },
                             { "name" : "location", "series" : [
                                 "Office 1",
                                 "Office 2",
                                 "Office 3",
                                 "Office 4",
                                 "Office 5"
-                            ]},
-                            { "name" : "model_number", "value" : "demo_environment_sensor" },
-                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
-                            { "name" : "_status", "value" : "active" },
+                            ]}
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "at" : "PT0S",
+            "repeats": 5,
+            "interval" : "PT0S",
+            "action": {
+                "create_device" : {
+                    "functions" : {
+                        "basic" : {
+                            "label_root" : "CityFibre Environment Sensor"
+                        },
+                        GLOBAL_SENSOR_FUNCTIONS,
+                        "variable" : [
+                            GLOBAL_SENSOR_VARIABLES,
+                            ENVIRONMENT_SENSOR_VARIABLES,
+                            { "name" : "customer_id", "value" : "5b880cf52645087f044cbe21" },
                             {
-                                "name"  : "temp",
-                                "timefunction" : {
-                                    "sinewave" : {
-                                        "period" : ["PT7M", "PT13M", "PT17M", "PT23M", "PT37M", "PT3H", "PT13H", "PT27H", "P3D", "P7D", "P13D"],
-                                        "overall_amplitude" : 15.0,
-                                        "overall_offset" : -3.5,
-                                        "sample_period" : "PT1H",
-                                        "randomise_phase_by" : "$id",   
-                                        "precision" : 10
-                                    }
-                                }
+                                "name" : "name",
+                                "series" : [
+                                    "CityFibre Environment Sensor 1",
+                                    "CityFibre Environment Sensor 2",
+                                    "CityFibre Environment Sensor 3",
+                                    "CityFibre Environment Sensor 4",
+                                    "CityFibre Environment Sensor 5"
+                                ]
                             },
-                            {
-                                "name" : "humidity",
-                                "timefunction": {
-                                    "randomwave" : {
-                                        "period" : "PT1H",
-                                        "lower" : 30,
-                                        "upper" : 50
-                                    }
-                                }
-                            }, 
-                            {
-                                "name" : "co",
-                                "timefunction" : {
-                                    "randomwave" : {
-                                        "period" : "PT1H",
-                                        "lower" : 0,
-                                        "upper" : 5
-                                    }
-                                }
+                            { 
+                                "name" : "dev_eui", 
+                                "series" : 
+                                [
+                                    "0004a30b00aaaac1", 
+                                    "0004a30b00aaaac2", 
+                                    "0004a30b00aaaac3", 
+                                    "0004a30b00aaaac4", 
+                                    "0004a30b00aaaac5" 
+                                ] 
                             },
-                            {
-                                "name" : "rssi",
-                                "timefunction" : {
-                                    "randomwave" : {
-                                        "period" : "PT1H",
-                                        "lower" : -110,
-                                        "upper" : -60
-                                    }
-                                }
-                            }
+                            { "name" : "location", "series" : [
+                                "Office 1",
+                                "Office 2",
+                                "Office 3",
+                                "Office 4",
+                                "Office 5"
+                            ]}
                         ]
                     }
                 }
             }
         }
+        
     ]
 }
