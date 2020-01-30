@@ -65,10 +65,32 @@
                                     "0004a30b00aaaaa9",
                                     "0004a30b00aaaaaa"
                                 ] },
-                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
-                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "customer_id", "value" : "5b880cf52645087f044cbe21" },
+                            { "name" : "location", "series" : [
+                                "Bay 1",
+                                "Bay 2",
+                                "Bay 3",
+                                "Bay 4",
+                                "Bay 5",
+                                "Bay 6",
+                                "Bay 7",
+                                "Bay 8",
+                                "Bay 9",
+                                "Bay 10"
+                            ] },
                             { "name" : "model_number", "value" : "demo_parking_sensor" },
-                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" }
+                            { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
+                            { "name" : "_status", "value" : "active" },
+                            {
+                                "name" : "rssi",
+                                "timefunction" : {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : -110,
+                                        "upper" : -60
+                                    }
+                                }
+                            }
                         ]
                     }
                 }
@@ -82,7 +104,7 @@
                 "create_device" : {
                     "functions" : {
                         "basic" : {
-                            "label_root" : "Environment Sensor"
+                            "label_root" : "Demo Environment Sensor"
                         },
                         "battery" : {
                             "life_mu" : "PT10H",
@@ -119,10 +141,17 @@
                                     "0004a30b00aaaab5" 
                                 ] 
                             },
-                            { "name" : "customer_id", "value" : "5d31e315865b92512e1b3fe5" },
-                            { "name" : "location", "value" : "Place name here" },
+                            { "name" : "customer_id", "value" : "0" },
+                            { "name" : "location", "series" : [
+                                "Office 1",
+                                "Office 2",
+                                "Office 3",
+                                "Office 4",
+                                "Office 5"
+                            ]},
                             { "name" : "model_number", "value" : "demo_environment_sensor" },
                             { "name" : "tags", "value" : "tag_a, tab_b, tag_c" },
+                            { "name" : "_status", "value" : "active" },
                             {
                                 "name"  : "temp",
                                 "timefunction" : {
@@ -153,6 +182,16 @@
                                         "period" : "PT1H",
                                         "lower" : 0,
                                         "upper" : 5
+                                    }
+                                }
+                            },
+                            {
+                                "name" : "rssi",
+                                "timefunction" : {
+                                    "randomwave" : {
+                                        "period" : "PT1H",
+                                        "lower" : -110,
+                                        "upper" : -60
                                     }
                                 }
                             }
