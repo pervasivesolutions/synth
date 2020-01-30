@@ -6,4 +6,6 @@ rm -rf /var/www/synth/current/synth_accounts
 rm -rf /var/www/synth/current/synth_logs
 
 sudo systemctl restart cityfibre_synth
+sudo systemctl restart comms_synth
 sudo systemctl status cityfibre_synth
+sudo systemctl status comms_synth
