@@ -1,0 +1,17 @@
+[Unit]
+Description=CityFibre Synth
+After=network.target
+
+[Service]
+Type=simple
+Environment=STAGE=production
+WorkingDirectory=/var/www/synth/current
+ExecStart=/usr/bin/python3 synth OnCityFibreDevicePilot demo_dashboard_sensors
+Restart=on-failure
+User=pervasive
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cityfibre_synth
+
+[Install]
+WantedBy=multi-user.target
